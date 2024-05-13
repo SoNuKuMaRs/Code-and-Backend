@@ -129,13 +129,20 @@ const loginUser =asyncHandler( async (req, res) => {
   // send cookie
 
   const {email, username, password} = req.body       //req body -> data
-
-  if (!username || !email) {                         //username or email
-    throw new ApiError(400, "username or passwordd is required")
+  console.log(email);
+ 
+  if (!username && !email) {
+    throw new ApiError (400, "username or email is required")
   }
 
+  // Here is an alternative of above code bsed on logic discuss
+  // if (!(username || email)) {                         //username or email
+  //   throw new ApiError(400, "username or passwordd is required")
+
+  // }
+
   const user = await User.findOne({                   //find the user 
-    $or: [{username}, {password}]
+    $or: [{username}, {email}]
   })
 
   if (!user) {
@@ -152,8 +159,7 @@ const loginUser =asyncHandler( async (req, res) => {
   const {accessToken,refreshToken} = await
    generateAccessAndRefereshTokens(user._id)
 
-   const loggedInUser = await User.findById(user._id)
-   select("-password -refreshToken")
+   const loggedInUser = await User.findById(user._id).select("-password -refreshToken")
 
    // send cookie
    const options = {
@@ -169,7 +175,7 @@ const loginUser =asyncHandler( async (req, res) => {
     new ApiResponse(
       200,
       {
-        user: loggedInUser.accessToken.refreshToken
+        user: loggedInUser, accessToken, refreshToken
       },
       "User logged in Successfully"
     )
