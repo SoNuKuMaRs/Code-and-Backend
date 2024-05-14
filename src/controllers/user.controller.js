@@ -112,7 +112,7 @@ const registerUser = asyncHandler(async (req, res) => {
     .status(201)
     .json(new ApiResponse(200, createUser, "User registerd successfully"));
 });
-
+ 
 //Login
 const loginUser = asyncHandler(async (req, res) => {
   // WRITE-TODO
@@ -212,11 +212,12 @@ const logoutUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "User logged Out"));
 });
 
+//refreshAccessToken
 const refreshAccessToken = asyncHandler(async (req, res) => {
   const incomingRefreshToken =
     req.cookies.refreshToken || req.body.refreshToken;
 
-  if (incomingRefreshToken) {
+  if (!incomingRefreshToken) {
     throw new ApiError(401, "unauthorized requst");
   }
 
